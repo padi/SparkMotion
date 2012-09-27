@@ -46,7 +46,7 @@ module SparkMotion
       api_key: nil,
       api_secret: nil,
       api_user: nil,
-      callback: "https://sparkredirect.herokuapp.com",
+      callback: "https://sparkplatform.com/oauth2/callback",
       endpoint: "https://developers.sparkapi.com", # change to https://api.developers.sparkapi.com for production
       auth_endpoint: "https://sparkplatform.com/oauth2",  # Ignored for Spark API Auth
       auth_grant_url: "https://api.sparkapi.com/v1/oauth2/grant",

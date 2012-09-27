@@ -1,6 +1,4 @@
 module SparkMotion
-  VERSION = "0.1.0"
-
   class OAuth2Client
     include BW::KVO
 

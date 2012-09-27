@@ -43,8 +43,8 @@ module SparkMotion
     attr_accessor *DEBUGGER
 
     DEFAULT = {
-      api_key: nil,
-      api_secret: nil,
+      api_key: "YourAPIKey",
+      api_secret: "YourAPISecret",
       api_user: nil,
       callback: "https://sparkplatform.com/oauth2/callback",
       endpoint: "https://developers.sparkapi.com", # change to https://api.developers.sparkapi.com for production
@@ -66,15 +66,15 @@ module SparkMotion
       puts "#{self} initializing..."
       @@instances << self
       (VALID_OPTION_KEYS + ACCESS_KEYS).each do |key|
-        send("#{key.to_s}=", DEFAULT[key])
+        send("#{key.to_s}=", opts[key] || DEFAULT[key])
       end
     end
 
     # Sample Usage:
     # client = SparkMotion::OAuth2Client.new
     # client.configure do |config|
-    #   config.api_key      = "e8dx727d5padwh6dh1lydapic"
-    #   config.api_secret   = "2d6w2rqwisv0o9dxovhp6g98b"
+    #   config.api_key      = "YourAPIKey"
+    #   config.api_secret   = "YourAPISecret"
     #   config.callback     = "https://sparkplatform.com/oauth2/callback"
     #   config.auth_endpoint = "https://sparkplatform.com/oauth2"
     #   config.endpoint   = 'https://developers.sparkapi.com'
@@ -99,7 +99,7 @@ module SparkMotion
         end
       end
 
-      return # so that authorization_code will not be printed in output
+      return
     end
 
     def authorize &block
@@ -137,21 +137,20 @@ module SparkMotion
       # https://<spark_endpoint>/<api version>/<spark resource>
       complete_url = self.endpoint + "/#{version}" + spark_url
 
-      headers = {
-        :"User-Agent" => "MotionSpark RubyMotion Sample App",
-        :"X-SparkApi-User-Agent" => "MotionSpark RubyMotion Sample App",
-        :"Authorization" => "OAuth #{self.access_token}"
-      }
-
-      opts={}
-      opts.merge!(options)
-      opts.merge!({:headers => headers})
-
       block ||= lambda { |returned|
         puts("SparkMotion: default callback")
       }
 
       request = lambda {
+        # refresh Authorization header every time `request` is called
+        headers = {
+          :"User-Agent" => "MotionSpark RubyMotion Sample App",
+          :"X-SparkApi-User-Agent" => "MotionSpark RubyMotion Sample App",
+          :"Authorization" => "OAuth #{self.access_token}"
+        }
+        opts={:headers => headers}
+        opts.merge!(options)
+
         BW::HTTP.get(complete_url, opts) do |response|
           puts "SparkMotion: [status code #{response.status_code}] [#{spark_url}]"
 
@@ -193,8 +192,7 @@ module SparkMotion
     end
 
     def authorized?
-      # a string is truthy, but this should not return the refresh token
-      self.refresh_token && self.authorized ? true : false
+      self.refresh_token && self.authorized
     end
 
     private

@@ -1,3 +1,0 @@
-### SparkMotion
-- RubyMotion gem for Spark API
-- currently uses OAuth2 authorization scheme (http://sparkplatform.com/docs/authentication/oauth2_authentication)
